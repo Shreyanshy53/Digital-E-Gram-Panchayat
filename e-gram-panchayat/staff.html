@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Staff Dashboard - E-Gram Panchayat</title>
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+  <h2>Welcome Staff</h2>
+  <h3>All Applications</h3>
+  <ul id="applicationsList"></ul>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      updateDoc,
+      doc
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDb9KFkEVhbyGNLwxJCmbLfYaXR92BcuZE",
+      authDomain: "e-gram-panchayat-1c286.firebaseapp.com",
+      projectId: "e-gram-panchayat-1c286",
+      storageBucket: "e-gram-panchayat-1c286.appspot.com",
+      messagingSenderId: "535087901950",
+      appId: "1:535087901950:web:b99824ba4d8898f31389af"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        loadApplications();
+      }
+    });
+
+    async function loadApplications() {
+      const applicationsRef = collection(db, "applications");
+      const snapshot = await getDocs(applicationsRef);
+      const list = document.getElementById("applicationsList");
+
+      snapshot.forEach((docSnap) => {
+        const appData = docSnap.data();
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+          <strong>User ID:</strong> ${appData.uid}<br>
+          <strong>Service ID:</strong> ${appData.serviceId}<br>
+          <strong>Details:</strong> ${appData.details}<br>
+          <strong>Status:</strong> ${appData.status}<br>
+          <select id="status-${docSnap.id}">
+            <option value="Pending" ${appData.status === "Pending" ? "selected" : ""}>Pending</option>
+            <option value="In Review" ${appData.status === "In Review" ? "selected" : ""}>In Review</option>
+            <option value="Approved" ${appData.status === "Approved" ? "selected" : ""}>Approved</option>
+            <option value="Rejected" ${appData.status === "Rejected" ? "selected" : ""}>Rejected</option>
+          </select>
+          <button onclick="updateStatus('${docSnap.id}')">Update Status</button>
+          <hr>
+        `;
+
+        list.appendChild(li);
+      });
+    }
+
+    window.updateStatus = async function (docId) {
+      const newStatus = document.getElementById(`status-${docId}`).value;
+      const appRef = doc(db, "applications", docId);
+      await updateDoc(appRef, { status: newStatus });
+      alert("Status updated!");
+      location.reload();
+    };
+  </script>
+  <!-- Button -->
+<button id="logoutBtn">Logout</button>
+
+<!-- Script -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDb9KFkEVhbyGNLwxJCmbLfYaXR92BcuZE",
+    authDomain: "e-gram-panchayat-1c286.firebaseapp.com",
+    projectId: "e-gram-panchayat-1c286",
+    storageBucket: "e-gram-panchayat-1c286.appspot.com",
+    messagingSenderId: "535087901950",
+    appId: "1:535087901950:web:b99824ba4d8898f31389af"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Auto-redirect if not logged in
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+    }
+  });
+
+  // ✅ Logout Handler
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    await signOut(auth);
+    alert("Logged out successfully!");
+    window.location.href = "login.html";
+  });
+</script>
+
+</body>
+</html>

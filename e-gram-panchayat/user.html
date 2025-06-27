@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Dashboard - E-Gram Panchayat</title>
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+  <h2>Welcome, User</h2>
+
+  <h3>Available Services</h3>
+  <ul id="servicesList"></ul>
+
+  <h3>Apply for a Service</h3>
+  <form id="applicationForm">
+    <label for="service">Select Service:</label>
+    <select id="serviceDropdown"></select><br><br>
+
+    <label for="details">Application Details:</label><br>
+    <textarea id="details" rows="4" cols="40" placeholder="Write your details..." required></textarea><br><br>
+
+    <button type="submit">Submit Application</button>
+  </form>
+
+  <h3>My Applications</h3>
+  <ul id="myApplicationsList"></ul>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+    import { getFirestore, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDb9KFkEVhbyGNLwxJCmbLfYaXR92BcuZE",
+      authDomain: "e-gram-panchayat-1c286.firebaseapp.com",
+      projectId: "e-gram-panchayat-1c286",
+      storageBucket: "e-gram-panchayat-1c286.appspot.com",
+      messagingSenderId: "535087901950",
+      appId: "1:535087901950:web:b99824ba4d8898f31389af"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        loadServices();
+        loadMyApplications();
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    async function loadServices() {
+      const servicesRef = collection(db, "services");
+      const snapshot = await getDocs(servicesRef);
+      const dropdown = document.getElementById("serviceDropdown");
+      const list = document.getElementById("servicesList");
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+
+        // Add to dropdown
+        const option = document.createElement("option");
+        option.value = doc.id;
+        option.textContent = data.name;
+        dropdown.appendChild(option);
+
+        // Add to list
+        const li = document.createElement("li");
+        li.textContent = `${data.name} - ${data.description}`;
+        list.appendChild(li);
+      });
+    }
+
+    // Handle form submission
+    document.getElementById("applicationForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const serviceId = document.getElementById("serviceDropdown").value;
+      const details = document.getElementById("details").value;
+
+      await addDoc(collection(db, "applications"), {
+        uid: currentUser.uid,
+        serviceId,
+        details,
+        status: "Pending",
+        submittedAt: new Date().toISOString()
+      });
+
+      alert("Application Submitted!");
+      loadMyApplications(); // Refresh list
+    });
+
+    async function loadMyApplications() {
+      const appsList = document.getElementById("myApplicationsList");
+      appsList.innerHTML = "";
+
+      const q = query(collection(db, "applications"), where("uid", "==", currentUser.uid));
+      const snapshot = await getDocs(q);
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const li = document.createElement("li");
+        li.textContent = `Service ID: ${data.serviceId} | Status: ${data.status}`;
+        appsList.appendChild(li);
+      });
+    }
+  </script>
+  <!-- Logout Button -->
+
+
+<!-- Script -->
+<script type="module">
+  import { signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+  // ... auth, db initialization already added above
+
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    await signOut(auth);
+    alert("Logged out!");
+    window.location.href = "login.html";
+  });
+</script>
+<!-- Button -->
+<button id="logoutBtn">Logout</button>
+
+<!-- Script -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDb9KFkEVhbyGNLwxJCmbLfYaXR92BcuZE",
+    authDomain: "e-gram-panchayat-1c286.firebaseapp.com",
+    projectId: "e-gram-panchayat-1c286",
+    storageBucket: "e-gram-panchayat-1c286.appspot.com",
+    messagingSenderId: "535087901950",
+    appId: "1:535087901950:web:b99824ba4d8898f31389af"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Auto-redirect if not logged in
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+    }
+  });
+
+  // ✅ Logout Handler
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    await signOut(auth);
+    alert("Logged out successfully!");
+    window.location.href = "login.html";
+  });
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - E-Gram Panchayat</title>
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+  <h2>Welcome Admin</h2>
+
+  <h3>Create New Service</h3>
+  <form id="createServiceForm">
+    <input type="text" id="serviceName" placeholder="Service Name" required><br><br>
+    <textarea id="serviceDescription" placeholder="Service Description" rows="3" cols="40" required></textarea><br><br>
+    <button type="submit">Add Service</button>
+  </form>
+
+  <h3>Existing Services</h3>
+  <ul id="servicesList"></ul>
+
+  <h3>All Applications</h3>
+  <ul id="applicationsList"></ul>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      addDoc,
+      deleteDoc,
+      doc,
+      updateDoc
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDb9KFkEVhbyGNLwxJCmbLfYaXR92BcuZE",
+      authDomain: "e-gram-panchayat-1c286.firebaseapp.com",
+      projectId: "e-gram-panchayat-1c286",
+      storageBucket: "e-gram-panchayat-1c286.appspot.com",
+      messagingSenderId: "535087901950",
+      appId: "1:535087901950:web:b99824ba4d8898f31389af"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        loadServices();
+        loadApplications();
+      }
+    });
+
+    // Add Service
+    document.getElementById("createServiceForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("serviceName").value;
+      const description = document.getElementById("serviceDescription").value;
+
+      await addDoc(collection(db, "services"), {
+        name,
+        description
+      });
+
+      alert("Service added!");
+      document.getElementById("createServiceForm").reset();
+      loadServices();
+    });
+
+    // Load Services
+    async function loadServices() {
+      const servicesRef = collection(db, "services");
+      const snapshot = await getDocs(servicesRef);
+      const list = document.getElementById("servicesList");
+      list.innerHTML = "";
+
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <strong>${data.name}</strong>: ${data.description}
+          <button onclick="deleteService('${docSnap.id}')">Delete</button>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    // Delete Service
+    window.deleteService = async function (id) {
+      await deleteDoc(doc(db, "services", id));
+      alert("Service deleted!");
+      loadServices();
+    };
+
+    // Load Applications
+    async function loadApplications() {
+      const appsRef = collection(db, "applications");
+      const snapshot = await getDocs(appsRef);
+      const list = document.getElementById("applicationsList");
+      list.innerHTML = "";
+
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+          <strong>User ID:</strong> ${data.uid}<br>
+          <strong>Service ID:</strong> ${data.serviceId}<br>
+          <strong>Details:</strong> ${data.details}<br>
+          <strong>Status:</strong> ${data.status}<br>
+          <select id="status-${docSnap.id}">
+            <option value="Pending" ${data.status === "Pending" ? "selected" : ""}>Pending</option>
+            <option value="In Review" ${data.status === "In Review" ? "selected" : ""}>In Review</option>
+            <option value="Approved" ${data.status === "Approved" ? "selected" : ""}>Approved</option>
+            <option value="Rejected" ${data.status === "Rejected" ? "selected" : ""}>Rejected</option>
+          </select>
+          <button onclick="updateStatus('${docSnap.id}')">Update Status</button>
+          <hr>
+        `;
+
+        list.appendChild(li);
+      });
+    }
+
+    window.updateStatus = async function (docId) {
+      const newStatus = document.getElementById(`status-${docId}`).value;
+      await updateDoc(doc(db, "applications", docId), { status: newStatus });
+      alert("Status updated!");
+      loadApplications();
+    };
+  </script>
+  <!-- Logout Button -->
+<button id="logoutBtn">Logout</button>
+
+<!-- Script -->
+<script type="module">
+  import { signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+  // ... auth, db initialization already added above
+
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    await signOut(auth);
+    alert("Logged out!");
+    window.location.href = "login.html";
+  });
+</script>
+
+</body>
+</html>

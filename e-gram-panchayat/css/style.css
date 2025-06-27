@@ -1,0 +1,146 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f7f7f7;
+  }
+  
+  h2, h3 {
+    color: #333;
+  }
+  
+  form {
+    margin-bottom: 30px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  
+  input, textarea, select {
+    width: 90%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 16px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  li {
+    background: #fff;
+    padding: 15px;
+    margin: 10px 0;
+    border-left: 5px solid #007bff;
+    border-radius: 5px;
+  }
+/* General Page Styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
+  
+  h2, h3 {
+    text-align: center;
+    color: #1e3a8a;
+    margin-top: 20px;
+  }
+  
+  /* Form Container */
+  form {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 25px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Inputs, Textareas, Selects */
+  input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 15px;
+  }
+  
+  /* Buttons */
+  button {
+    width: 100%;
+    padding: 12px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #1d4ed8;
+  }
+  
+  /* List Styling */
+  ul {
+    list-style-type: none;
+    padding: 0;
+    max-width: 800px;
+    margin: auto;
+  }
+  
+  li {
+    background: #fff;
+    margin: 10px 0;
+    padding: 20px;
+    border-left: 5px solid #2563eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Logout Button */
+  #logoutBtn {
+    width: auto;
+    margin: 20px auto;
+    display: block;
+    background-color: #dc2626;
+  }
+  
+  #logoutBtn:hover {
+    background-color: #b91c1c;
+  }
+  
+  /* Responsive */
+  @media (max-width: 600px) {
+    form, ul {
+      width: 90%;
+      padding: 10px;
+    }
+  
+    button {
+      font-size: 14px;
+    }
+  }
+    
