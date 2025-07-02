@@ -1,20 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Digital E-Gram Panchayat</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase.js"></script>
-  <script src="js/firebase-config.js"></script>
-  <link rel="stylesheet" href="css/style.css">
-
+  <!-- Correct Firebase Imports -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <h1>Welcome to Digital E-Gram Panchayat</h1>
-  <a href="register.html">Register</a>
+  <h2>Apply for Panchayat Service</h2>
+
+  <form id="applicationForm">
+    <input type="text" id="name" placeholder="Full Name" required />
+    <input type="text" id="aadhar" placeholder="Aadhar Number" required maxlength="12" />
+    <input type="email" id="email" placeholder="Email Address" required />
+    <select id="service" required>
+      <option value="">Select a service</option>
+      <option value="Birth Certificate">Birth Certificate</option>
+      <option value="Caste Certificate">Caste Certificate</option>
+      <option value="Income Certificate">Income Certificate</option>
+    </select>
+    <textarea id="description" placeholder="Description (optional)"></textarea>
+    <button type="submit">Submit Application</button>
+  </form>
+
+  <script src="js/firebase-config.js"></script>
+  <script src="js/script.js"></script>
 </body>
 </html>
